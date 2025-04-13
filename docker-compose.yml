@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    command: python manage.py runserver 0.0.0.0:8000
+    restart: "on-failure"
+    volumes:
+      - ./backend/:/usr/src/backend/
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - 80:8000
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16-bookworm
+    restart: "on-failure"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - POSTGRES_USER=django_user
+      - POSTGRES_PASSWORD=django_password
+      - POSTGRES_DB=django_db
+    ports:
+      - 5432:5432
+
+  worker1:
+    build: ./backend
+
+  worker2:
+    build: ./backend
+
+volumes:
+  postgres_data:
