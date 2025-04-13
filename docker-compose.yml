@@ -30,9 +30,36 @@ services:
 
   worker1:
     build: ./backend
+    command: bash -c "celery -A backend worker --loglevel=info --concurrency 1 -E"
+    restart: "on-failure"
+    volumes:
+      - ./backend/:/usr/src/backend/
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    depends_on:
+      - backend
+      - redis
 
   worker2:
     build: ./backend
+    command: bash -c "celery -A backend worker --loglevel=info --concurrency 1 -E"
+    restart: "on-failure"
+    volumes:
+      - ./backend/:/usr/src/backend/
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    depends_on:
+      - backend
+      - redis
+
+  redis:
+    restart: "on-failure"
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    image: redis:7.2.4-bookworm
+    ports:
+      - 6379:6379
 
 volumes:
   postgres_data:
