@@ -7,7 +7,7 @@ from django.shortcuts import render, get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Request, UploadedFile, EditedFile
+from .models import Request, UploadedFile, UploadedFile, EditedFile
 from tasks import task1, task2
 
 from django.views.generic.edit import FormView
@@ -27,18 +27,10 @@ class TestingView(APIView):
         return Response({"requests": [str(request) for request in requests]})
 
     def post(self, request):
-        task_number = int(request.data.get('task_number'))
-        number = int(request.data.get('number'))
+        file_id=request.data.get('file_id')
+        task2.delay(file_id)
 
-        if task_number == 1:
-            task1.delay(number)
-
-        if task_number == 2:
-            request_id = int(request.data.get('request_id'))
-            file_id = int(request.data.get('file_id'))
-            task2.delay(request_id, file_id)
-
-        return Response({"success": f'Task with number {task_number} started'})
+        return Response({"success": f'Task with number {123123} started'})
 
 
 def image_upload(request):

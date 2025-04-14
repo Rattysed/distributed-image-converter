@@ -1,23 +1,33 @@
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
 import io
 from .image_tasking import ImageTasking
 
 
 class ImageHandler(ImageTasking):
     def edit(self, image_bytes):
-        image = Image.open(io.BytesIO(image_bytes))
-        
-        draw = ImageDraw.Draw(image)
-        font = ImageFont.load_default()
-        
-        watermark_text = "MIPT"
-        # text_width, text_height = draw.textsize(watermark_text, font=font)
-        # position = (image.width - text_width - 10, image.height - text_height - 10)
+        main = Image.open(io.BytesIO(image_bytes)).convert('RGBA')
+        mark = Image.open('./requests/image_handler/logo.png').convert('RGBA')
+        mark = mark.rotate(30, expand=1)
 
-        draw.text((0, 0), watermark_text, fill=(255, 255, 255, 128), font=font)
+        mask = mark.split()[3].point(lambda x: x // 2)
+        mark.putalpha(mask)
 
+        mark_width, mark_height = mark.size
+        main_width, main_height = main.size
+        aspect_ratio = mark_width / mark_height
+        new_mark_width = main_width * 0.4
+        mark.thumbnail((int(new_mark_width), int(new_mark_width / aspect_ratio)), Image.LANCZOS)
+
+        tmp_img = Image.new('RGBA', main.size, (255, 255, 255, 0))
+        for i in range(0, tmp_img.size[0], mark.size[0]):
+            for j in range(0, tmp_img.size[1], mark.size[1]):
+                tmp_img.paste(mark, (i, j), mark)
+
+        combined = Image.alpha_composite(main, tmp_img)
+
+        combined = combined.convert('RGB')
         output = io.BytesIO()
-        image.save(output, format="PNG")
+        combined.save(output, 'JPEG', quality=100)
         output.seek(0)
 
         return output.getvalue()
