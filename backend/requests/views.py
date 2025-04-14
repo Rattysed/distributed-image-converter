@@ -8,7 +8,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Request, Upload
-from tasks import task1
+from tasks import task1, task2
+
+from django.views.generic.edit import FormView
+from .forms import FileFieldForm
+from .models import UploadedImage
+from django.core.files.storage import FileSystemStorage
+
 
 
 class RequestView(APIView):
@@ -28,6 +34,11 @@ class TestingView(APIView):
 
         if task_number == 1:
             task1.delay(number)
+        
+        if task_number == 2:
+            request_id = int(request.data.get('request_id'))
+            file_id = int(request.data.get('file_id'))
+            task2.delay(request_id, file_id)
 
         return Response({"success": f'Task with number {task_number} started'})
 
@@ -68,3 +79,26 @@ def get_uploaded_file(request, file_id=1):
         return HttpResponse(file_content, content_type='application/octet-stream')
     else:
         return HttpResponse("Файл не найден или произошла ошибка при загрузке.", status=404)
+    
+def handle_uploaded_file(file):
+    fs = FileSystemStorage(location=settings.MEDIA_ROOT / 'uploads/')
+    filename = fs.save(file.name, file)
+    return fs.url(filename)
+
+class FileFieldFormView(FormView):
+    form_class = FileFieldForm
+    template_name = "upload_images.html"  # Replace with your template.
+    success_url = "/"  # Replace with your URL or reverse().
+
+def form_valid(self, form):
+    files = form.cleaned_data["file_field"]
+    for file in files:
+        if file.name.endswith('.jpg') or file.name.endswith('.png'):
+            file_url = handle_uploaded_file(file)
+            # UploadedImage.objects.create(image=file_url)
+        else:
+            print("Not an image")
+    return super().form_valid(form)
+
+def form_invalid(self, form):
+    return self.render_to_response(self.get_context_data(form=form))
