@@ -1,7 +1,8 @@
 from django.contrib import admin
 
-from .models import Request, File
+from .models import Request, EditedFile, UploadedFile
 
 
 admin.site.register(Request)
-admin.site.register(File)
+admin.site.register(UploadedFile)
+admin.site.register(EditedFile)

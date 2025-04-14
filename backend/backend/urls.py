@@ -22,13 +22,14 @@ from django.conf.urls.static import static
 
 from requests.views import FileFieldFormView, image_upload, get_uploaded_file, request_status, check_status
 
-urlpatterns = [
-    path('', image_upload, name='upload'),
-    path('lol/', get_uploaded_file),
-    path('admin/', admin.site.urls),
-    path('api/', include('requests.urls')),
-    path('media/', FileFieldFormView.as_view()),
-    path('request/<str:request_id>/', request_status, name='request_status'),
-    path('check-status/<str:request_id>/', check_status, name='check_status'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
+urlpatterns = (
+        [
+            path('', image_upload, name='upload'),
+            path('lol/', get_uploaded_file),
+            path('admin/', admin.site.urls),
+            path('api/', include('requests.urls')),
+            path('media/', FileFieldFormView.as_view()),
+            path('request/<str:request_id>/', request_status, name='request_status'),
+            path('check-status/<str:request_id>/', check_status, name='check_status'),
+        ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+)

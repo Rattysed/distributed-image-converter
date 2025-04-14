@@ -145,7 +145,6 @@ CELERY_IMPORTS = ['tasks']
 # MEDIA_URL = f'{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/'
 
 
-
 # STATIC_URL = "/static/"
 
 
@@ -155,7 +154,6 @@ CELERY_IMPORTS = ['tasks']
 # AWS_SECRET_ACCESS_KEY = 'minioadmin'
 # AWS_STORAGE_BUCKET_NAME = 'media'
 # AWS_S3_ENDPOINT_URL = "http://minio:9000"
-
 
 
 # aws settings
@@ -169,4 +167,4 @@ AWS_S3_CUSTOM_DOMAIN = f'{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}'
 PUBLIC_MEDIA_LOCATION = 'media'
 PUBLIC_EDITED_LOCATION = 'edited'
 MEDIA_URL = f'{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/'
-DEFAULT_FILE_STORAGE = 'requests.storage_backends.PublicMediaStorage'
+DEFAULT_FILE_STORAGE = 'requests.storage_backends.ResultStorage'

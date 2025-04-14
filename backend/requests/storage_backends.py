@@ -12,3 +12,9 @@ class EditedStorage(S3Boto3Storage):
     location = 'edited'
     default_acl = 'public-read'
     file_overwrite = False
+
+
+class ResultStorage(S3Boto3Storage):
+    location = 'result'
+    default_acl = 'public-read'
+    file_overwrite = False
