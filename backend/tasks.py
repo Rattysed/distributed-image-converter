@@ -9,12 +9,6 @@ from backend.celery import app
 
 
 @app.task
-def task1(number):
-    res = Request.objects.create(test_field=number)
-    return True
-
-
-@app.task
 def task_image_edit(file_id):
     image = UploadedFile.get_by_id(file_id)
 
@@ -38,6 +32,8 @@ def task_to_zip(file_ids):
     buffer_archive.seek(0)
     
     file_1 = EditedFile.get_by_id(file_ids[0])
-    EditedFile.create_file(file_1.request, str(file_1.request)+ '.zip', buffer_archive.getvalue())
+    
+    file_1.request.update_file(str(file_1.request)+ '.zip', buffer_archive.getvalue())
+    file_1.request.update_status_done()
 
     return True

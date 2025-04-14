@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Request, UploadedFile, UploadedFile, EditedFile
-from tasks import task1, task_image_edit, task_to_zip
+from tasks import task_image_edit, task_to_zip
 from celery import chord, group
 
 from django.views.generic.edit import FormView
@@ -16,30 +16,8 @@ from .forms import FileFieldForm
 from django.core.files.storage import FileSystemStorage
 
 
-class TestingView(APIView):
-    def get(self, request):
-        requests = Request.objects.all()
-        return Response({"requests": [str(request) for request in requests]})
-
-    def post(self, request):
-        file_id=request.data.get('file_id')
-        task_image_edit.delay(file_id)
-        
-        # file_ids = [
-        #     '01fa63e1-29bf-4582-b712-62273e0b820b',
-        #     '0625f41c-50b2-4f17-8def-6fd5ff976130',
-        #     '0683df45-2d23-4b16-a886-5f1d8b79ce6f'
-        # ]
-        
-        # tasks = group(task_image_edit.s(file_id) for file_id in file_ids)
-        # res = chord(tasks)(task_to_zip.s())
-
-        return Response({"success": f'Task with number {123123} started'})
-
-
 def get_task_status(request_id):
     return Request.is_request_done(request_id)
-
 
 
 def request_status(request, request_id):
@@ -70,11 +48,17 @@ class FileFieldFormView(FormView):
     def form_valid(self, form):
         files = form.cleaned_data["file_field"]
         request = Request.create_request()
+        file_ids = []
+        
         for file in files:
             if file.name.endswith('.jpg') or file.name.endswith('.jpeg') or file.name.endswith('.png'):
-                UploadedFile.create_file(request, file.name, file)
+                file_ids.append(UploadedFile.create_file(request, file.name, file).id)
             else:
                 print("Not an image")
+        
+        tasks = group(task_image_edit.s(file_id) for file_id in file_ids)
+        res = chord(tasks)(task_to_zip.s())
+            
         self.success_url = f"/request/{str(request.id)}"
         return super().form_valid(form)
 
