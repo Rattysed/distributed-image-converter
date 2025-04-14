@@ -30,5 +30,5 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    const intervalId = setInterval(checkStatus, 5000);
+    const intervalId = setInterval(checkStatus, 3000);
 });

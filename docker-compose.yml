@@ -25,16 +25,14 @@ services:
       - postgres_data:/var/lib/postgresql/data/
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-    environment:
-      - POSTGRES_USER=django_user
-      - POSTGRES_PASSWORD=django_password
-      - POSTGRES_DB=django_db
+    env_file:
+      - .env
     ports:
       - 5432:5432
 
   worker1:
     build: ./backend
-    command: bash -c "celery -A backend worker --loglevel=info --concurrency 1 -E"
+    command: bash -c "celery -A backend worker --loglevel=info --concurrency $$CELERY_CONCURRENCY_COUNT -E"
     restart: "on-failure"
     volumes:
       - ./backend/:/usr/src/backend/
@@ -48,7 +46,7 @@ services:
 
   worker2:
     build: ./backend
-    command: bash -c "celery -A backend worker --loglevel=info --concurrency 1 -E"
+    command: bash -c "celery -A backend worker --loglevel=info --concurrency $$CELERY_CONCURRENCY_COUNT -E"
     restart: "on-failure"
     volumes:
       - ./backend/:/usr/src/backend/
