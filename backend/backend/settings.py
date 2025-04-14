@@ -140,7 +140,7 @@ AWS_ACCESS_KEY_ID = os.environ.get("MINIO_ROOT_USER", "minioadmin")
 AWS_SECRET_ACCESS_KEY = os.environ.get("MINIO_ROOT_PASSWORD", "minioadmin")
 AWS_STORAGE_BUCKET_NAME = os.environ.get("MINIO_BUCKET_NAME", "files")
 AWS_DEFAULT_ACL = None
-AWS_S3_ENDPOINT_URL = "http://minio:9000"
+AWS_S3_ENDPOINT_URL = os.environ.get("MINIO_URL", "http://minio:9000")
 AWS_S3_CUSTOM_DOMAIN = f'{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}'
 
 DEFAULT_FILE_STORAGE = 'requests.storage_backends.UploadedStorage'

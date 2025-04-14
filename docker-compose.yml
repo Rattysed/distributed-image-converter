@@ -30,7 +30,7 @@ services:
     ports:
       - 5432:5432
 
-  worker1:
+  worker:
     build: ./backend
     command: bash -c "celery -A backend worker --loglevel=info --concurrency $$CELERY_CONCURRENCY_COUNT -E"
     restart: "on-failure"
@@ -43,20 +43,9 @@ services:
     depends_on:
       - backend
       - redis
-
-  worker2:
-    build: ./backend
-    command: bash -c "celery -A backend worker --loglevel=info --concurrency $$CELERY_CONCURRENCY_COUNT -E"
-    restart: "on-failure"
-    volumes:
-      - ./backend/:/usr/src/backend/
-      - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro
-    env_file:
-      - .env
-    depends_on:
-      - backend
-      - redis
+    deploy:
+      mode: replicated
+      replicas: $WORKERS_COUNT
 
   redis:
     restart: "on-failure"
