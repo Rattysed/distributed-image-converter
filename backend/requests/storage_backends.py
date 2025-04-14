@@ -2,12 +2,13 @@ from django.conf import settings
 from storages.backends.s3boto3 import S3Boto3Storage
 
 
-class StaticStorage(S3Boto3Storage):
-    location = 'static'
+class UploadedStorage(S3Boto3Storage):
+    location = 'uploaded'
     default_acl = 'public-read'
+    file_overwrite = False
 
 
-class PublicMediaStorage(S3Boto3Storage):
-    location = 'media'
+class EditedStorage(S3Boto3Storage):
+    location = 'edited'
     default_acl = 'public-read'
     file_overwrite = False
