@@ -1,27 +1,16 @@
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
-from .models import Request
-from tasks import task1
+from django import forms
+from django.views.generic.edit import FormView
+from .forms import FileFieldForm
 
 
-class RequestView(APIView):
-    def get(self, request):
-        requests = Request.objects.all()
-        return Response({"requests": [str(request) for request in requests]})
+class FileFieldFormView(FormView):
+    form_class = FileFieldForm
+    template_name = "upload_images.html"  # Replace with your template.
+    success_url = "..."  # Replace with your URL or reverse().
 
-
-class TestingView(APIView):
-    def get(self, request):
-        requests = Request.objects.all()
-        return Response({"requests": [str(request) for request in requests]})
-    
-    def post(self, request):
-        task_number = int(request.data.get('task_number'))
-        number = int(request.data.get('number'))
-        
-        if task_number == 1:
-            task1.delay(number)
-            
-        
-        return Response({"success": f'Task with number {task_number} started'})
+    def form_valid(self, form):
+        files = form.cleaned_data["file_field"]
+        for f in files:
+            if not f.name.lower().endswith('.jpg'):
+                raise forms.ValidationError(f"Файл {f.name} не является JPG изображением.")
+        return super().form_valid(form)
