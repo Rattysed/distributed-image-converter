@@ -101,3 +101,7 @@ class EditedFile(File):
         file = ContentFile(data, name=name)
 
         return cls.objects.create(request=request, file=file)
+    
+    def get_file_data(self):
+        with self.file.file.open('rb') as f:
+            return f.read()

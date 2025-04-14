@@ -8,7 +8,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Request, UploadedFile, UploadedFile, EditedFile
-from tasks import task1, task2
+from tasks import task1, task_image_edit, task_to_zip
+from celery import chord, group
 
 from django.views.generic.edit import FormView
 from .forms import FileFieldForm
@@ -21,8 +22,17 @@ class TestingView(APIView):
         return Response({"requests": [str(request) for request in requests]})
 
     def post(self, request):
-        file_id = request.data.get('file_id')
-        task2.delay(file_id)
+        file_id=request.data.get('file_id')
+        task_image_edit.delay(file_id)
+        
+        # file_ids = [
+        #     '01fa63e1-29bf-4582-b712-62273e0b820b',
+        #     '0625f41c-50b2-4f17-8def-6fd5ff976130',
+        #     '0683df45-2d23-4b16-a886-5f1d8b79ce6f'
+        # ]
+        
+        # tasks = group(task_image_edit.s(file_id) for file_id in file_ids)
+        # res = chord(tasks)(task_to_zip.s())
 
         return Response({"success": f'Task with number {123123} started'})
 
