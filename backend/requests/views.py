@@ -1,6 +1,6 @@
 import boto3
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 
 from django.shortcuts import render, get_object_or_404
 
@@ -86,6 +86,19 @@ def handle_uploaded_file(file):
     filename = fs.save(file.name, file)
     return fs.url(filename)
 
+def get_task_status(request_id):
+    return True
+
+def request_status(request, request_id):
+    # Отображение страницы статуса
+    return render(request, 'request.html', {'request_id': request_id})
+
+def check_status(request, request_id):
+    # Логика проверки статуса задачи по request_id
+    status = get_task_status(request_id)  # Например, 'pending' или 'ready'
+    if status:
+        return JsonResponse({'status': 'ready', 'link': f'/media/{request_id}_result.zip'})
+    return JsonResponse({'status': 'pending'})
 
 class FileFieldFormView(FormView):
     form_class = FileFieldForm
