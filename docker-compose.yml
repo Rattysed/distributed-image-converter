@@ -13,6 +13,7 @@ services:
       - 80:8000
     depends_on:
       - db
+      - minio
 
   db:
     image: postgres:16-bookworm
@@ -30,9 +31,51 @@ services:
 
   worker1:
     build: ./backend
+    command: bash -c "celery -A backend worker --loglevel=info --concurrency 1 -E"
+    restart: "on-failure"
+    volumes:
+      - ./backend/:/usr/src/backend/
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    depends_on:
+      - backend
+      - redis
 
   worker2:
     build: ./backend
+    command: bash -c "celery -A backend worker --loglevel=info --concurrency 1 -E"
+    restart: "on-failure"
+    volumes:
+      - ./backend/:/usr/src/backend/
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    depends_on:
+      - backend
+      - redis
+
+  redis:
+    restart: "on-failure"
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    image: redis:7.2.4-bookworm
+    ports:
+      - 6379:6379
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"  # Optional: панель управления
+    command: server /data --console-address ":9001"
+    restart: "on-failure"
 
 volumes:
   postgres_data:
+  minio_data:
