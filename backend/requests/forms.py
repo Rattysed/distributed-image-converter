@@ -19,3 +19,10 @@ class MultipleFileField(forms.FileField):
 
 class FileFieldForm(forms.Form):
     file_field = MultipleFileField()
+
+    def clean(self):
+        files = self.files.getlist('file_field')
+        for file in files:
+            if not file.name.endswith('.jpg') and not file.name.endswith('.png'):
+                raise forms.ValidationError(f"{file.name} не является .jpg или .png файлом.")
+        return super().clean()

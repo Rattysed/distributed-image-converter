@@ -2,14 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Upload Images</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload JPG Images</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'requests/style.css' %}">
 </head>
 <body>
-    <h1>Upload JPG Images</h1>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Upload</button>
-    </form>
+    <div class="container">
+        <h1>Загрузка изображений (.jpg)</h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="form-actions">
+                <button type="submit">Загрузить</button>
+            </div>
+        </form>
+        {% if form.errors %}
+            <div class="errors">
+                <ul>
+                    {% for error in form.errors.values %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
 </body>
 </html>
