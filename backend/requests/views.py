@@ -6,7 +6,7 @@ from .forms import FileFieldForm
 class FileFieldFormView(FormView):
     form_class = FileFieldForm
     template_name = "upload_images.html"  # Replace with your template.
-    success_url = "..."  # Replace with your URL or reverse().
+    success_url = "/"  # Replace with your URL or reverse().
 
     def form_valid(self, form):
         files = form.cleaned_data["file_field"]
