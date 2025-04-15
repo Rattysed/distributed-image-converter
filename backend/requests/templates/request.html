@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Status</title>
     {% load static %}
-    <script src="{% static 'task_status/task_status.js' %}"></script>
     <link rel="stylesheet" href="{% static 'task_status/style.css' %}">
 </head>
 <body>
@@ -14,5 +13,48 @@
         <h1 id="status-message">Ожидайте, задача выполняется...</h1>
         <div id="result-container" style="margin-top: 20px;"></div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const requestId = document.getElementById('request-id').value;
+            const statusMessage = document.getElementById('status-message');
+            const resultContainer = document.getElementById('result-container');
+
+            checkStatus();
+
+            function checkStatus() {
+                fetch(`/api/status/${requestId}/`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Запрос не найден или ошибка сервера');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.status === 'ready') {
+                            statusMessage.textContent = 'Обработка завершена!';
+                            
+                            const downloadLink = document.createElement('a');
+                            downloadLink.href = data.link;
+                            downloadLink.textContent = 'Скачать результат';
+                            downloadLink.className = 'download-link';
+                            downloadLink.target = '_blank';
+                            
+                            resultContainer.innerHTML = '';
+                            resultContainer.appendChild(downloadLink);
+                        } else if (data.status === 'error') {
+                            statusMessage.textContent = 'Произошла ошибка при обработке';
+                            resultContainer.innerHTML = `<div class="error-message">${data.message || 'Неизвестная ошибка'}</div>`;
+                        } else {
+                            setTimeout(checkStatus, 3000);
+                        }
+                    })
+                    .catch(error => {
+                        statusMessage.textContent = 'Ошибка проверки статуса';
+                        resultContainer.innerHTML = `<div class="error-message">${error.message}</div>`;
+                    });
+            }
+        });
+    </script>
 </body>
 </html>

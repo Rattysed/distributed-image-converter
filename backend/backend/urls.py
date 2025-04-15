@@ -20,13 +20,18 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from requests.views import FileFieldFormView, request_status, check_status
-
+from requests.views import FileUploadAPIView, RequestStatusAPIView, index_view, request_page_view
 
 urlpatterns = [
-    path('', FileFieldFormView.as_view()),
+    # admin
     path('admin/', admin.site.urls),
-    path('request/<str:request_id>/', request_status, name='request_status'),
-    path('check-status/<str:request_id>/', check_status, name='check_status'),
+    
+    # web
+    path('', index_view, name='index'),
+    path('request/<str:request_id>/', request_page_view, name='request_page'),
+    
+    # api
+    path('api/upload/', FileUploadAPIView.as_view(), name='api_upload'),
+    path('api/status/<str:request_id>/', RequestStatusAPIView.as_view(), name='api_status'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

@@ -12,54 +12,85 @@ from .forms import FileFieldForm
 from django.core.files.storage import FileSystemStorage
 from django.core.exceptions import ObjectDoesNotExist
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework import status
+
+from .serializers import RequestSerializer
+
 
 def get_task_status(request_id):
     return Request.is_request_done(request_id)
 
 
-def request_status(request, request_id):
+def index_view(request):
+    form = FileFieldForm()
+    return render(request, 'upload_images.html', {'form': form})
+
+
+def request_page_view(request, request_id):
     try:
         if Request.get_request(request_id) is None:
             return HttpResponseNotFound("404, No request")
     except Exception as e:
         return HttpResponseNotFound("404, No request")
+        
     return render(request, 'request.html', {'request_id': request_id})
 
 
-def check_status(request, request_id):
-    try:
-        task = Request.get_request(request_id)
-        url = task.get_resulting_link()
-        return JsonResponse({'status': 'ready', 'link': f'{url}'})
-    except ObjectDoesNotExist:
-        return JsonResponse({'status': 'error'})
-    except Exception as e:
-        print(e)
-        return JsonResponse({'status': 'pending'})
-
-
-class FileFieldFormView(FormView):
-    form_class = FileFieldForm
-    template_name = "upload_images.html"
-    success_url = "/"
-
-    def form_valid(self, form):
-        files = form.cleaned_data["file_field"]
-        request = Request.create_request()
+class FileUploadAPIView(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+    
+    def post(self, request, format=None):
+        files = request.FILES.getlist('files')
+        if not files:
+            return Response({'error': 'No files provided'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        req = Request.create_request()
         file_ids = []
         
         for file in files:
             if file.name.endswith('.jpg') or file.name.endswith('.jpeg') or file.name.endswith('.png'):
-                file_ids.append(UploadedFile.create_file(request, file.name, file).id)
+                file_ids.append(UploadedFile.create_file(req, file.name, file).id)
             else:
-                print("Not an image")
-        
+                continue
+                
+        if not file_ids:
+            return Response({'error': 'No valid image files were uploaded'}, status=status.HTTP_400_BAD_REQUEST)
+                
         tasks = group(task_image_edit.s(file_id) for file_id in file_ids)
-        res = chord(tasks)(task_to_zip.s())
-            
-        self.success_url = f"/request/{str(request.id)}"
+        chord(tasks)(task_to_zip.s())
         
-        return super().form_valid(form)
+        serializer = RequestSerializer(req)
+        response_data = serializer.data
+        response_data.update({
+            'status_url': f'/api/status/{str(req.id)}/'
+        })
+        
+        return Response(response_data, status=status.HTTP_202_ACCEPTED)
 
-    def form_invalid(self, form):
-        return self.render_to_response(self.get_context_data(form=form))
+
+class RequestStatusAPIView(APIView):
+    def get(self, request, request_id, format=None):
+        try:
+            task = Request.get_request(request_id)
+            serializer = RequestSerializer(task)
+            response_data = serializer.data
+            
+            if task.status == 'done':
+                url = task.get_resulting_link()
+                response_data.update({
+                    'status': 'ready',
+                    'link': f'{url}'
+                })
+            else:
+                response_data.update({
+                    'status': 'processing',
+                })
+                
+            return Response(response_data)
+        except ObjectDoesNotExist:
+            return Response({'error': 'Request not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'status': 'pending', 'message': str(e)})

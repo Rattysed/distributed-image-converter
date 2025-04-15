@@ -10,22 +10,83 @@
 <body>
     <div class="container">
         <h1>Загрузка изображений (.jpg/.png)</h1>
-        <form method="post" enctype="multipart/form-data">
+        <form id="upload-form" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.as_p }}
             <div class="form-actions">
-                <button type="submit">Загрузить</button>
+                <button type="button" id="submit-button">Загрузить</button>
             </div>
         </form>
-        {% if form.errors %}
-            <div class="errors">
-                <ul>
-                    {% for error in form.errors.values %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endif %}
+        <div id="status-message" style="display: none; margin-top: 15px;"></div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('upload-form');
+            const submitButton = document.getElementById('submit-button');
+            const statusMessage = document.getElementById('status-message');
+            
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            
+            submitButton.addEventListener('click', async function() {
+                const fileInput = form.querySelector('input[type="file"]');
+                const files = fileInput.files;
+                
+                if (files.length === 0) {
+                    statusMessage.textContent = 'Пожалуйста, выберите хотя бы один файл';
+                    statusMessage.style.display = 'block';
+                    statusMessage.style.color = 'red';
+                    return;
+                }
+                
+                const formData = new FormData();
+                for (let i = 0; i < files.length; i++) {
+                    formData.append('files', files[i]);
+                }
+                
+                statusMessage.textContent = 'Загрузка файлов...';
+                statusMessage.style.display = 'block';
+                statusMessage.style.color = 'blue';
+                submitButton.disabled = true;
+                
+                try {
+                    const response = await fetch('/api/upload/', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken')
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        window.location.href = `/request/${data.id}/`;
+                    } else {
+                        const errorData = await response.json();
+                        statusMessage.textContent = 'Ошибка: ' + (errorData.error || 'Не удалось загрузить файлы');
+                        statusMessage.style.color = 'red';
+                        submitButton.disabled = false;
+                    }
+                } catch (error) {
+                    statusMessage.textContent = 'Ошибка загрузки: ' + error.message;
+                    statusMessage.style.color = 'red';
+                    submitButton.disabled = false;
+                }
+            });
+        });
+    </script>
 </body>
 </html>

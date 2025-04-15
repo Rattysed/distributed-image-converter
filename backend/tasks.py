@@ -61,7 +61,9 @@ def task_clear_requests():
     print(timezone.now())
     requests = Request.objects.all()
     for request in requests:
-        if request.expiration_date < timezone.now():
+        if request.expiration_date is None:
+            request.update_expiration_date()
+        elif request.expiration_date < timezone.now():
             request.delete()
         
     return True
