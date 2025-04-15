@@ -5,11 +5,13 @@ services:
     image: nginx:latest
     restart: "on-failure"
     ports:
+      - "443:443"
       - "80:80"
       - "9000:9000"
       - "9001:9001"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
       - ./backend/static:/usr/src/backend/static:ro
       - ./backend/media:/usr/src/backend/media:ro
       - /etc/timezone:/etc/timezone:ro

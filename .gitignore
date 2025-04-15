@@ -4,5 +4,7 @@
 backend/static
 backend/media
 
+backend/celerybeat-schedule
+
 .idea
 .env
