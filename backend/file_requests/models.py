@@ -21,6 +21,7 @@ class Request(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     status = models.CharField(max_length=10, choices=RequestStatus.choices,
                               default=RequestStatus.WAITING)
+    time_begin = models.DateTimeField(auto_now_add=True)
     time_end = models.DateTimeField(null=True, blank=True)
     url = models.CharField(max_length=250, blank=True, null=True)
     file = models.FileField(storage=RESULT_STORAGE)
@@ -38,6 +39,10 @@ class Request(models.Model):
     def is_request_done(cls, request_id: str):
         request = cls.objects.get(id=request_id)
         return not request is None and request.status == RequestStatus.DONE
+
+    def get_processing_time(self):
+        delta = self.time_end - self.time_begin
+        return delta.total_seconds()
 
     def get_resulting_link(self, expiration=3600):
         if not self.status == RequestStatus.DONE:
