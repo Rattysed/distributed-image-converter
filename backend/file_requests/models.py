@@ -42,7 +42,7 @@ class Request(models.Model):
 
     def get_processing_time(self):
         delta = self.time_end - self.time_begin
-        return delta.total_seconds()
+        return delta.total_seconds() - 60 * 60
 
     def get_resulting_link(self, expiration=3600):
         if not self.status == RequestStatus.DONE:
