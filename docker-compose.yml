@@ -48,7 +48,7 @@ services:
 
   worker:
     build: ./backend
-    command: bash -c "celery -A backend worker --loglevel=info --concurrency $$CELERY_CONCURRENCY_COUNT -E"
+    command: bash -c "celery -A backend worker -B --loglevel=info --concurrency $$CELERY_CONCURRENCY_COUNT"
     restart: "on-failure"
     volumes:
       - ./backend/:/usr/src/backend/

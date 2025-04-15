@@ -4,7 +4,7 @@ from django.shortcuts import render, get_object_or_404
 
 
 from .models import Request, UploadedFile, UploadedFile, EditedFile
-from tasks import task_image_edit, task_to_zip, task_clear_request
+from tasks import task_image_edit, task_to_zip
 from celery import chord, group
 
 from django.views.generic.edit import FormView
@@ -58,6 +58,7 @@ class FileFieldFormView(FormView):
         res = chord(tasks)(task_to_zip.s())
             
         self.success_url = f"/request/{str(request.id)}"
+        
         return super().form_valid(form)
 
     def form_invalid(self, form):

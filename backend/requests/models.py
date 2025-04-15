@@ -3,6 +3,9 @@ from django.db import models
 from django.conf import settings
 from django.core.files.base import ContentFile
 
+import datetime
+from django.utils import timezone
+
 from requests.storage_backends import UploadedStorage, EditedStorage, ResultStorage
 
 RESULT_STORAGE = ResultStorage()
@@ -21,6 +24,7 @@ class Request(models.Model):
     time_end = models.DateTimeField(null=True, blank=True)
     url = models.CharField(max_length=250, blank=True, null=True)
     file = models.FileField(storage=RESULT_STORAGE)
+    expiration_date = models.DateTimeField(null=True, blank=True)
 
     @classmethod
     def create_request(cls):
@@ -64,11 +68,24 @@ class Request(models.Model):
         self.file = ContentFile(data, name=name)
         self.save()
         
-    def delete_file(self):
-        storage = self.file.storage
-        if storage.exists(self.file.name):
-            storage.delete(self.file.name)
-        super().delete()
+
+    def update_expiration_date(self):
+        self.expiration_date = timezone.now() + timezone.timedelta(minutes=1)
+        self.save()
+        
+    def delete(self, *args, **kwargs):
+        if self.file:
+            self.file.delete(save=False)
+            
+        uploaded_files = UploadedFile.objects.filter(request=self)
+        for uploaded_file in uploaded_files:
+            uploaded_file.delete()
+            
+        edited_files = EditedFile.objects.filter(request=self)
+        for edited_file in edited_files:
+            edited_file.delete()
+        
+        super().delete(*args, **kwargs)
     
     def update_status_done(self):
         self.status = RequestStatus.DONE
@@ -86,11 +103,10 @@ class File(models.Model):
     def get_by_id(cls, id):
         return cls.objects.get(id=id)
     
-    def delete_file(self):
-        storage = self.file.storage
-        if storage.exists(self.file.name):
-            storage.delete(self.file.name)
-        super().delete()
+    def delete(self, *args, **kwargs):
+        if self.file:
+            self.file.delete(save=False)
+        super().delete(*args, **kwargs)
 
     class Meta:
         abstract = True
