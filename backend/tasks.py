@@ -62,15 +62,6 @@ def task_clear_requests():
     requests = Request.objects.all()
     for request in requests:
         if request.expiration_date < timezone.now():
-            uploaded_files = UploadedFile.objects.filter(request=request)
-            for uploaded_file in uploaded_files:
-                uploaded_file.delete_file()
-
-            edited_files = EditedFile.objects.filter(request=request)
-            for edited_file in edited_files:
-                edited_file.delete_file()
-                
-            request.delete_file()
             request.delete()
         
     return True
