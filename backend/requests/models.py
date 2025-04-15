@@ -70,7 +70,7 @@ class Request(models.Model):
         
 
     def update_expiration_date(self):
-        self.expiration_date = timezone.now() + timezone.timedelta(minutes=1)
+        self.expiration_date = timezone.now() + timezone.timedelta(hours=1)
         self.save()
         
     def delete(self, *args, **kwargs):

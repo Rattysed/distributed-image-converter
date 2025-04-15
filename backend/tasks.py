@@ -46,7 +46,7 @@ def task_to_zip(file_ids):
         request.delete()
         return False
 
-    file_example = EditedFile.get_by_id(file_ids[0])
+    file_example = EditedFile.get_by_id(example_id)
     
     file_example.request.update_file(str(file_example.request.id) + '.zip', buffer_archive.getvalue())
     file_example.request.update_status_done()
