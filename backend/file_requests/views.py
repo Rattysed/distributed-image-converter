@@ -39,6 +39,20 @@ def request_page_view(request, request_id):
     return render(request, 'request.html', {'request_id': request_id})
 
 
+def get_request_time_processing_info(request, request_id):
+    stats = {}
+    try:
+        req = Request.get_request(request_id)
+        if req is None:
+            return HttpResponseNotFound("404, No request")
+
+        stats['seconds'] = req.get_processing_time()
+    except Exception as e:
+        return HttpResponseNotFound("404, No request")
+
+    return JsonResponse(stats)
+
+
 class FileUploadAPIView(APIView):
     parser_classes = (MultiPartParser, FormParser)
     
