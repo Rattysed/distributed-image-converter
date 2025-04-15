@@ -6,7 +6,7 @@ from .image_tasking import ImageTasking
 class ImageHandler(ImageTasking):
     def edit(self, image_bytes):
         main = Image.open(io.BytesIO(image_bytes)).convert('RGBA')
-        mark = Image.open('./requests/image_handler/logo.png').convert('RGBA')
+        mark = Image.open('./file_requests/image_handler/logo.png').convert('RGBA')
         mark = mark.rotate(30, expand=1)
 
         mask = mark.split()[3].point(lambda x: x // 2)

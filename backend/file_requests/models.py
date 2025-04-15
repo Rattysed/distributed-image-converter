@@ -6,7 +6,7 @@ from django.core.files.base import ContentFile
 import datetime
 from django.utils import timezone
 
-from requests.storage_backends import UploadedStorage, EditedStorage, ResultStorage
+from file_requests.storage_backends import UploadedStorage, EditedStorage, ResultStorage
 
 RESULT_STORAGE = ResultStorage()
 

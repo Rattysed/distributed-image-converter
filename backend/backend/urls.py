@@ -20,7 +20,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from requests.views import FileUploadAPIView, RequestStatusAPIView, index_view, request_page_view
+from file_requests.views import FileUploadAPIView, RequestStatusAPIView, index_view, request_page_view
 
 urlpatterns = [
     # admin

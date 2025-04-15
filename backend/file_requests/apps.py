@@ -22,9 +22,9 @@ def create_bucket(bucket_name):
             raise
 
 
-class RequestsConfig(AppConfig):
+class FileRequestsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'requests'
+    name = 'file_requests'
 
     def ready(self):
         create_bucket(settings.AWS_STORAGE_BUCKET_NAME)

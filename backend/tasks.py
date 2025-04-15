@@ -1,6 +1,6 @@
-from requests.models import Request, UploadedFile, EditedFile
+from file_requests.models import Request, UploadedFile, EditedFile
 from time import sleep
-from requests.cutom_image_handler import ImageHandler
+from file_requests.cutom_image_handler import ImageHandler
 
 import zipfile
 from io import BytesIO
@@ -58,12 +58,10 @@ def task_to_zip(file_ids):
 
 @app.task
 def task_clear_requests():
-    print(timezone.now())
     requests = Request.objects.all()
     for request in requests:
         if request.expiration_date is None:
             request.update_expiration_date()
         elif request.expiration_date < timezone.now():
             request.delete()
-        
     return True
