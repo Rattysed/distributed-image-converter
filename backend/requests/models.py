@@ -36,7 +36,7 @@ class Request(models.Model):
         return not request is None and request.status == RequestStatus.DONE
 
     def get_resulting_link(self, expiration=3600):
-        if not self.id == RequestStatus.DONE:
+        if not self.status == RequestStatus.DONE:
             raise ValueError("Task is not done!")
         if not self.file:
             raise BrokenPipeError("There should be file if task is done")
@@ -49,7 +49,7 @@ class Request(models.Model):
             ClientMethod='get_object',
             Params={
                 'Bucket': bucket_name,
-                'Key': f"results/{self.id}.zip",
+                'Key': f"result/{self.id}.zip",
             },
             ExpiresIn=expiration
         )

@@ -33,7 +33,7 @@ def task_to_zip(file_ids):
     
     file_1 = EditedFile.get_by_id(file_ids[0])
     
-    file_1.request.update_file(str(file_1.request)+ '.zip', buffer_archive.getvalue())
+    file_1.request.update_file(str(file_1.request.id) + '.zip', buffer_archive.getvalue())
     file_1.request.update_status_done()
 
     return True

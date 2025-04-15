@@ -1,11 +1,7 @@
-import boto3
-from django.conf import settings
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse, HttpResponseNotFound
 
 from django.shortcuts import render, get_object_or_404
 
-from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from .models import Request, UploadedFile, UploadedFile, EditedFile
 from tasks import task_image_edit, task_to_zip
@@ -21,23 +17,22 @@ def get_task_status(request_id):
 
 
 def request_status(request, request_id):
+    try:
+        if Request.get_request(request_id) is None:
+            return HttpResponseNotFound("404, No request")
+    except Exception as e:
+        return HttpResponseNotFound("404, No request")
     return render(request, 'request.html', {'request_id': request_id})
 
 
 def check_status(request, request_id):
-    # Логика проверки статуса задачи по request_id
-    status = get_task_status(request_id)  # Например, 'pending' или 'ready'
-    # status = True
-    if status:
+    try:
         task = Request.get_request(request_id)
-        try:
-            url = task.get_resulting_link()
-            print(url)
-            return JsonResponse({'status': 'ready', 'link': f'{url}'})
-        except Exception as e:
-            print(e)
-            return JsonResponse({'status': 'pending'})
-    return JsonResponse({'status': 'pending'})
+        url = task.get_resulting_link()
+        return JsonResponse({'status': 'ready', 'link': f'{url}'})
+    except Exception as e:
+        print(e)
+        return JsonResponse({'status': 'pending'})
 
 
 class FileFieldFormView(FormView):
