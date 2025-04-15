@@ -39,7 +39,7 @@ def request_page_view(request, request_id):
     return render(request, 'request.html', {'request_id': request_id})
 
 
-def get_request_time_processing_info(request, request_id):
+def request_time_processing_info(request, request_id):
     stats = {}
     try:
         req = Request.get_request(request_id)

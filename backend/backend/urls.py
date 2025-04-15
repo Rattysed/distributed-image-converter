@@ -20,7 +20,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
-from file_requests.views import FileUploadAPIView, RequestStatusAPIView, index_view, request_page_view
+from file_requests.views import FileUploadAPIView, RequestStatusAPIView, index_view, request_page_view, request_time_processing_info
 
 urlpatterns = [
     # admin
@@ -29,6 +29,8 @@ urlpatterns = [
     # web
     path('', index_view, name='index'),
     path('request/<str:request_id>/', request_page_view, name='request_page'),
+    path('request/exec_time/<str:request_id>/', request_time_processing_info),
+
     
     # api
     path('api/upload/', FileUploadAPIView.as_view(), name='api_upload'),
