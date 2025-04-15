@@ -3,7 +3,6 @@ from django.db import models
 from django.conf import settings
 from django.core.files.base import ContentFile
 
-import datetime
 from django.utils import timezone
 
 from file_requests.storage_backends import UploadedStorage, EditedStorage, ResultStorage
@@ -42,7 +41,7 @@ class Request(models.Model):
 
     def get_processing_time(self):
         delta = self.time_end - self.time_begin
-        return delta.total_seconds() - 60 * 60
+        return delta.total_seconds()
 
     def get_resulting_link(self, expiration=3600):
         if not self.status == RequestStatus.DONE:
@@ -72,7 +71,10 @@ class Request(models.Model):
     def update_file(self, name: str, data):
         self.file = ContentFile(data, name=name)
         self.save()
-        
+
+    def update_time_end(self):
+        self.time_end = timezone.now()
+        self.save()
 
     def update_expiration_date(self):
         self.expiration_date = timezone.now() + timezone.timedelta(hours=1)
