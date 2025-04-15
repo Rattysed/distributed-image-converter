@@ -4,7 +4,7 @@ from django.shortcuts import render, get_object_or_404
 
 
 from .models import Request, UploadedFile, UploadedFile, EditedFile
-from tasks import task_image_edit, task_to_zip
+from tasks import task_image_edit, task_to_zip, task_clear_request
 from celery import chord, group
 
 from django.views.generic.edit import FormView

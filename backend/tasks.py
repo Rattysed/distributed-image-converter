@@ -37,3 +37,20 @@ def task_to_zip(file_ids):
     file_1.request.update_status_done()
 
     return True
+
+@app.task
+def task_clear_request(request_id):
+    request = Request.objects.get(id=request_id)
+    
+    uploaded_files = UploadedFile.objects.filter(request=request)
+    for uploaded_file in uploaded_files:
+        uploaded_file.delete_file()
+        
+    edited_files = EditedFile.objects.filter(request=request)
+    for edited_file in edited_files:
+        edited_file.delete_file()
+        
+    request.delete_file()
+    request.delete()
+    
+    return True

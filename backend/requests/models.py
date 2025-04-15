@@ -49,13 +49,11 @@ class Request(models.Model):
             ClientMethod='get_object',
             Params={
                 'Bucket': bucket_name,
-                'Key': f"{ResultStorage.location}/{self.id}.zip",
+                'Key': f"result/{self.id}.zip",
             },
             ExpiresIn=expiration
         )
-        url = url[url.index('//') + 2:]
-        url = url[url.index('/'):]
-        url = '/minio' + url
+        url = url.replace("minio:", "localhost:")
         self.url = url
         self.save()
         return url
@@ -63,6 +61,12 @@ class Request(models.Model):
     def update_file(self, name: str, data):
         self.file = ContentFile(data, name=name)
         self.save()
+        
+    def delete_file(self):
+        storage = self.file.storage
+        if storage.exists(self.file.name):
+            storage.delete(self.file.name)
+        super().delete()
     
     def update_status_done(self):
         self.status = RequestStatus.DONE
@@ -79,6 +83,12 @@ class File(models.Model):
     @classmethod
     def get_by_id(cls, id):
         return cls.objects.get(id=id)
+    
+    def delete_file(self):
+        storage = self.file.storage
+        if storage.exists(self.file.name):
+            storage.delete(self.file.name)
+        super().delete()
 
     class Meta:
         abstract = True
