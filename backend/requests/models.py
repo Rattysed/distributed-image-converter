@@ -49,11 +49,13 @@ class Request(models.Model):
             ClientMethod='get_object',
             Params={
                 'Bucket': bucket_name,
-                'Key': f"result/{self.id}.zip",
+                'Key': f"{ResultStorage.location}/{self.id}.zip",
             },
             ExpiresIn=expiration
         )
-        url = url.replace("minio:", "localhost:")
+        url = url[url.index('//') + 2:]
+        url = url[url.index('/'):]
+        url = '/minio' + url
         self.url = url
         self.save()
         return url

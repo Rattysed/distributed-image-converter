@@ -2,5 +2,6 @@
 *migrations
 
 backend/static
+backend/media
 
 .env

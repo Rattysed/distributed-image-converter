@@ -10,6 +10,7 @@ from celery import chord, group
 from django.views.generic.edit import FormView
 from .forms import FileFieldForm
 from django.core.files.storage import FileSystemStorage
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def get_task_status(request_id):
@@ -30,6 +31,8 @@ def check_status(request, request_id):
         task = Request.get_request(request_id)
         url = task.get_resulting_link()
         return JsonResponse({'status': 'ready', 'link': f'{url}'})
+    except ObjectDoesNotExist:
+        return JsonResponse({'status': 'error'})
     except Exception as e:
         print(e)
         return JsonResponse({'status': 'pending'})

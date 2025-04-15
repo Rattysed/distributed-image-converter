@@ -17,6 +17,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (data.status === "pending") {
                     statusMessage.textContent = "Ожидайте, задача выполняется...";
+                } else if (data.status === "error") {
+                    statusMessage.textContent = "Произошла ошибка. Перенаправление на главную страницу...";
+                    clearInterval(intervalId);
+                    setTimeout(() => {
+                        window.location.href = "/";
+                    }, 3000);
                 } else if (data.status === "ready") {
                     statusMessage.textContent = "Задача завершена!";
                     resultContainer.innerHTML = `<a href="${data.link}" target="_blank">Скачать результат</a>`;
