@@ -71,6 +71,16 @@ cp .env.example .env
 docker compose up --build -d
 ```
 
+#### Полезные команды
+
+```bash
+# Создать миграции
+docker compose exec backend python manage.py makemigrations
+
+# Просмотреть логи
+docker compose logs
+```
+
 ## Сценарий использования
 1. Пользователь заходит на сайт для добавления водяного знака на изображения
 2. Загружает одну или несколько картинок через форму
