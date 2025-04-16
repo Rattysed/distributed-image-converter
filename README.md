@@ -44,7 +44,7 @@ sudo certbot certonly --standalone -d example.com
 sed -i 's/yourdomain\.com/example.com/g' nginx/nginx.conf
 
 # Запуск контейнеров
-docker compose -f docker-compose.prod.yml up --build -d
+docker compose -f docker-compose.prod.yml --env-file .env.prod up --build -d
 ```
 
 #### Для HTTP
@@ -54,7 +54,7 @@ docker compose -f docker-compose.prod.yml up --build -d
 cp nginx/nginx.conf.http_only nginx/nginx.conf
 
 # Запуск контейнеров
-docker compose -f docker-compose.prod.yml up --build -d
+docker compose -f docker-compose.prod.yml --env-file .env.prod up --build -d
 ```
 
 ### Development запуск
