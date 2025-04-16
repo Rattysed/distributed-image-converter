@@ -62,6 +62,7 @@ class FileUploadAPIView(APIView):
             return Response({'error': 'No files provided'}, status=status.HTTP_400_BAD_REQUEST)
             
         req = Request.create_request()
+        req.update_time_begin()
         file_ids = []
         
         for file in files:

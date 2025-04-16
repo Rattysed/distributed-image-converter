@@ -20,7 +20,7 @@ class Request(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     status = models.CharField(max_length=10, choices=RequestStatus.choices,
                               default=RequestStatus.WAITING)
-    time_begin = models.DateTimeField(auto_now_add=True)
+    time_begin = models.DateTimeField(null=True, blank=True)
     time_end = models.DateTimeField(null=True, blank=True)
     url = models.CharField(max_length=250, blank=True, null=True)
     file = models.FileField(storage=RESULT_STORAGE)
@@ -67,6 +67,10 @@ class Request(models.Model):
         self.url = url
         self.save()
         return url
+    
+    def update_time_begin(self):
+        self.time_begin = timezone.now()
+        self.save()
     
     def update_file(self, name: str, data):
         self.file = ContentFile(data, name=name)
