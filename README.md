@@ -14,7 +14,7 @@
 https://distributed-text-converter.vdi.mipt.ru/
 
 ## ADR
-[Документ](https://docs.google.com/document/d/1k3kA74dh3GqihAmqnCHH11soxFqfsgy9d00co5NAAHs/edit?usp=sharing)
+[Документ](https://docs.google.com/document/d/1S2HRJaGzGcp1csoZyLI9-tDbUsQI3h1C8OkfD9z-JoE/edit?usp=sharing)
 
 
 ## Отчёт о командной работе
