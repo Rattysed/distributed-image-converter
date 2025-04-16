@@ -60,6 +60,7 @@ def save_data(count_workers, count, size, exec_times):
         os.mkdir(dirname)
 
     data = {
+        'workers-count': count_workers,
         'count': count,
         'size': size,
         'times': exec_times

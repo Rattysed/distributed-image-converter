@@ -10,7 +10,6 @@ backend/celerybeat-schedule
 test/assets
 test/data
 test/graphs
-test/.venv
 
 .idea
 .env
