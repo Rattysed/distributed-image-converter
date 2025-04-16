@@ -39,7 +39,7 @@ def request_page_view(request, request_id):
     return render(request, 'request.html', {'request_id': request_id})
 
 
-def get_request_time_processing_info(request, request_id):
+def request_time_processing_info(request, request_id):
     stats = {}
     try:
         req = Request.get_request(request_id)
@@ -48,7 +48,7 @@ def get_request_time_processing_info(request, request_id):
 
         stats['seconds'] = req.get_processing_time()
     except Exception as e:
-        return HttpResponseNotFound("404, No request")
+        return HttpResponseNotFound(f"404, {e}")
 
     return JsonResponse(stats)
 
@@ -63,7 +63,7 @@ class FileUploadAPIView(APIView):
             
         req = Request.create_request()
         file_ids = []
-        
+
         for file in files:
             if file.name.endswith('.jpg') or file.name.endswith('.jpeg') or file.name.endswith('.png'):
                 file_ids.append(UploadedFile.create_file(req, file.name, file).id)

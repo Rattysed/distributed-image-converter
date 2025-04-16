@@ -3,7 +3,6 @@ from django.db import models
 from django.conf import settings
 from django.core.files.base import ContentFile
 
-import datetime
 from django.utils import timezone
 
 from file_requests.storage_backends import UploadedStorage, EditedStorage, ResultStorage
@@ -22,7 +21,7 @@ class Request(models.Model):
     status = models.CharField(max_length=10, choices=RequestStatus.choices,
                               default=RequestStatus.WAITING)
     time_begin = models.DateTimeField(auto_now_add=True)
-    time_end = models.DateTimeField(null=True, blank=True)
+    time_end = models.DateTimeField(auto_now=True)
     url = models.CharField(max_length=250, blank=True, null=True)
     file = models.FileField(storage=RESULT_STORAGE)
     expiration_date = models.DateTimeField(null=True, blank=True)
@@ -72,7 +71,6 @@ class Request(models.Model):
     def update_file(self, name: str, data):
         self.file = ContentFile(data, name=name)
         self.save()
-        
 
     def update_expiration_date(self):
         self.expiration_date = timezone.now() + timezone.timedelta(hours=1)
