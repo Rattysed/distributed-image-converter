@@ -10,6 +10,21 @@
 - **Семенищев Андрей** — [semenishchev-ai](https://github.com/semenishchev-ai)
 - **Яфаров Руслан** — [afarovruslan](https://github.com/afarovruslan)
 
+## Тестовый контур
+https://distributed-text-converter.vdi.mipt.ru/
+
+## ADR
+[Документ](https://docs.google.com/document/d/1k3kA74dh3GqihAmqnCHH11soxFqfsgy9d00co5NAAHs/edit?usp=sharing)
+
+
+## Отчёт о командной работе
+[Документ](https://docs.google.com/document/d/1LjkAlB_TSUpNNyPun0Zn4SRAbDF94bXBH8_BmqF-rDk/edit?usp=sharing)
+
+
+## Отчёт о нагрузочном тестировании
+[Документ](https://docs.google.com/document/d/1LxtrG7AXtUTYVWms2OB0Dfjs_xuN3ZT_ZCxgWMfm6JQ/edit?usp=sharing)
+
+
 ## Требования
 - Docker Compose
 - Для HTTPS: доменное имя и certbot
