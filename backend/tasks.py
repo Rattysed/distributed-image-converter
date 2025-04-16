@@ -52,7 +52,6 @@ def task_to_zip(file_ids):
     file_example.request.update_status_done()
     
     file_example.request.update_expiration_date()
-    file_example.request.update_time_end()
 
     return True
 

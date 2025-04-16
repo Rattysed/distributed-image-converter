@@ -20,8 +20,8 @@ class Request(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     status = models.CharField(max_length=10, choices=RequestStatus.choices,
                               default=RequestStatus.WAITING)
-    time_begin = models.DateTimeField(null=True, blank=True)
-    time_end = models.DateTimeField(null=True, blank=True)
+    time_begin = models.DateTimeField(auto_now_add=True)
+    time_end = models.DateTimeField(auto_now=True)
     url = models.CharField(max_length=250, blank=True, null=True)
     file = models.FileField(storage=RESULT_STORAGE)
     expiration_date = models.DateTimeField(null=True, blank=True)
@@ -68,16 +68,8 @@ class Request(models.Model):
         self.save()
         return url
     
-    def update_time_begin(self):
-        self.time_begin = timezone.now()
-        self.save()
-    
     def update_file(self, name: str, data):
         self.file = ContentFile(data, name=name)
-        self.save()
-
-    def update_time_end(self):
-        self.time_end = timezone.now()
         self.save()
 
     def update_expiration_date(self):
