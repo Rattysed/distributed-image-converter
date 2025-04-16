@@ -21,15 +21,21 @@
 # Клонирование репозитория
 git clone https://github.com/Rattysed/distributed-image-converter.git
 cd distributed-image-converter
-
-# Создание файла конфигурации
-cp .env.example .env
 ```
 
-Настройте переменные в файле `.env` в соответствии с вашими требованиями.
+### Production запуск
 
-### Вариант 1: Запуск с HTTPS
+```bash
+# Создание файла конфигурации
+cp .env.prod.example .env.prod
+```
+
+Настройте переменные в файле `.env.prod` в соответствии с вашими требованиями.
+
+#### Для HTTPS
+
 Замените `example.com` на ваш домен:
+
 ```bash
 # Получение SSL-сертификата
 sudo certbot certonly --standalone -d example.com
@@ -38,14 +44,29 @@ sudo certbot certonly --standalone -d example.com
 sed -i 's/yourdomain\.com/example.com/g' nginx/nginx.conf
 
 # Запуск контейнеров
-docker compose up --build -d
+docker compose -f docker-compose.prod.yml up --build -d
 ```
 
-### Вариант 2: Запуск с HTTP
+#### Для HTTP
+
 ```bash
 # Использование HTTP-конфигурации nginx
 cp nginx/nginx.conf.http_only nginx/nginx.conf
 
+# Запуск контейнеров
+docker compose -f docker-compose.prod.yml up --build -d
+```
+
+### Development запуск
+
+```bash
+# Создание файла конфигурации
+cp .env.example .env
+```
+
+Настройте переменные в файле `.env` в соответствии с вашими требованиями.
+
+```bash
 # Запуск контейнеров
 docker compose up --build -d
 ```
