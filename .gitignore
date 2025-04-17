@@ -5,6 +5,10 @@ backend/media
 
 backend/celerybeat-schedule
 
+test/assets
+test/data
+test/graphs
+
 .idea
 .env
 .env.prod
