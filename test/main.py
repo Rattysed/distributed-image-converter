@@ -1,8 +1,11 @@
-import requests
-import json
-import time
 import argparse
+import concurrent.futures
+import itertools
+import json
 import os
+import requests
+import time
+
 
 def get_correct_image_path(size):
     for filename in os.listdir("./assets"):
@@ -12,17 +15,19 @@ def get_correct_image_path(size):
     print(f"Невозможно найти изображение, содержащее {size} в названии")
     exit(0)
 
+def post_image(size):
+    url_upload = 'https://distributed-text-converter.vdi.mipt.ru/api/upload/'
+    files = {'files': open(get_correct_image_path(size), 'rb')}
+    response_upload = requests.post(url_upload, files=files, allow_redirects=True)
+    request_id = json.loads(response_upload.text)['id']
+    print(response_upload.content)
+    return request_id
+
 def get_request_ids(size, count):
     print("[1] Отправление изображений")
 
-    request_ids = []
-
-    for i in range(count):
-        url_upload = 'http://localhost/api/upload/'
-        files = {'files': open(get_correct_image_path(size), 'rb')}
-        response_upload = requests.post(url_upload, files=files, allow_redirects=True)
-        request_id = json.loads(response_upload.text)['id']
-        request_ids.append(request_id)
+    with concurrent.futures.ThreadPoolExecutor(10) as executor:
+        request_ids = list(executor.map(post_image, itertools.repeat(size, count)))
 
     print("[1] Изображения отправлены")
     
@@ -35,15 +40,16 @@ def get_exec_times(request_ids):
 
     for request_id in request_ids:
         # Waiting till the end of image proccesing
-        url_status = f'http://localhost/api/status/{request_id}/'
+        url_status = f'https://distributed-text-converter.vdi.mipt.ru/api/status/{request_id}/'
         sleep_duration = 0.0
         sleep_addition = 0.5
         while json.loads(requests.get(url_status).text)['status'] != 'ready':
+            print(requests.get(url_status).content)
             sleep_duration += sleep_addition
-            time.sleep(sleep_duration)
+            time.sleep(min(5, sleep_duration))
 
         # Get the processing time
-        url_exec_time = f'http://localhost/request/exec_time/{request_id}/'
+        url_exec_time = f'https://distributed-text-converter.vdi.mipt.ru/request/exec_time/{request_id}/'
         response_exec_time = requests.get(url_exec_time)
         exec_time = json.loads(response_exec_time.text)['seconds']
         exec_times.append(exec_time)
