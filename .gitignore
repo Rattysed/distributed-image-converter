@@ -1,8 +1,6 @@
 *__pycache__
-*migrations
 
 backend/static
-backend/staticfiles
 backend/media
 
 backend/celerybeat-schedule
@@ -13,3 +11,4 @@ test/graphs
 
 .idea
 .env
+.env.prod

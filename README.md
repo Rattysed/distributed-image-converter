@@ -10,6 +10,21 @@
 - **Семенищев Андрей** — [semenishchev-ai](https://github.com/semenishchev-ai)
 - **Яфаров Руслан** — [afarovruslan](https://github.com/afarovruslan)
 
+## Тестовый контур
+https://distributed-text-converter.vdi.mipt.ru/
+
+## ADR
+[Документ](https://docs.google.com/document/d/1S2HRJaGzGcp1csoZyLI9-tDbUsQI3h1C8OkfD9z-JoE/edit?usp=sharing)
+
+
+## Отчёт о командной работе
+[Документ](https://docs.google.com/document/d/1LjkAlB_TSUpNNyPun0Zn4SRAbDF94bXBH8_BmqF-rDk/edit?usp=sharing)
+
+
+## Отчёт о нагрузочном тестировании
+[Документ](https://docs.google.com/document/d/1LxtrG7AXtUTYVWms2OB0Dfjs_xuN3ZT_ZCxgWMfm6JQ/edit?usp=sharing)
+
+
 ## Требования
 - Docker Compose
 - Для HTTPS: доменное имя и certbot
@@ -21,15 +36,21 @@
 # Клонирование репозитория
 git clone https://github.com/Rattysed/distributed-image-converter.git
 cd distributed-image-converter
-
-# Создание файла конфигурации
-cp .env.example .env
 ```
 
-Настройте переменные в файле `.env` в соответствии с вашими требованиями.
+### Production запуск
 
-### Вариант 1: Запуск с HTTPS
+```bash
+# Создание файла конфигурации
+cp .env.prod.example .env.prod
+```
+
+Настройте переменные в файле `.env.prod` в соответствии с вашими требованиями.
+
+#### Для HTTPS
+
 Замените `example.com` на ваш домен:
+
 ```bash
 # Получение SSL-сертификата
 sudo certbot certonly --standalone -d example.com
@@ -38,16 +59,41 @@ sudo certbot certonly --standalone -d example.com
 sed -i 's/yourdomain\.com/example.com/g' nginx/nginx.conf
 
 # Запуск контейнеров
-docker compose up --build -d
+docker compose -f docker-compose.prod.yml --env-file .env.prod up --build -d
 ```
 
-### Вариант 2: Запуск с HTTP
+#### Для HTTP
+
 ```bash
 # Использование HTTP-конфигурации nginx
 cp nginx/nginx.conf.http_only nginx/nginx.conf
 
 # Запуск контейнеров
+docker compose -f docker-compose.prod.yml --env-file .env.prod up --build -d
+```
+
+### Development запуск
+
+```bash
+# Создание файла конфигурации
+cp .env.example .env
+```
+
+Настройте переменные в файле `.env` в соответствии с вашими требованиями.
+
+```bash
+# Запуск контейнеров
 docker compose up --build -d
+```
+
+#### Полезные команды
+
+```bash
+# Создать миграции
+docker compose exec backend python manage.py makemigrations
+
+# Просмотреть логи
+docker compose logs
 ```
 
 ## Сценарий использования
