@@ -5,7 +5,6 @@ services:
     image: nginx:latest
     restart: "on-failure"
     ports:
-      - "443:443"
       - "80:80"
       - "9000:9000"
       - "9001:9001"
@@ -71,8 +70,8 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     image: redis:7.2.4-bookworm
-    ports:
-      - 6379:6379
+    expose:
+      - 6379
 
   minio:
     image: minio/minio:latest
@@ -80,8 +79,8 @@ services:
     volumes:
       - minio_data:/data
     expose:
-      - "9000"
-      - "9001"
+      - 9000
+      - 9001
     env_file:
       - .env
     command: server /data --console-address ":9001"
