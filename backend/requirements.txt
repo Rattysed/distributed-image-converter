@@ -9,3 +9,5 @@ boto3==1.26.59
 django-storages==1.14.4
 uuid==1.30
 django-celery-beat
+
+flower==2.0.1
