@@ -5,6 +5,8 @@ backend/media
 
 backend/celerybeat-schedule
 
+prometheus_data
+
 .idea
 .env
 .env.prod

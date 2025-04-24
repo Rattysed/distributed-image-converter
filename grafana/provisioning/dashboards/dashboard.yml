@@ -1,0 +1,15 @@
+apiVersion: 1  # Required for Grafana provisioning config
+
+providers:
+  # Provider configuration for dashboards
+  - name: 'default'  # Unique provider name
+    orgId: 1          # Default org (1 = Main Org)
+    folder: ''  # Dashboard folder name (creates/uses existing)
+    type: file         # Source type (file, git, etc.)
+    pause_dashboard: true
+    disableDeletion: true  # Prevents deletion of dashboards when files are removed
+    updateIntervalSeconds: 5  # How often to check for updates
+    allowUiUpdates: true  # Lets users modify dashboards in UI (saves to DB, not file)
+    options:
+      path: /var/lib/grafana/dashboards  # Path to dashboard JSON files
+      foldersFromFilesStructure: true  # Auto-create folders from subdirectories

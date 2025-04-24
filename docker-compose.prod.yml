@@ -87,8 +87,41 @@ services:
     command: server /data --console-address ":9001"
     restart: "on-failure"
 
+  flower:
+    image: mher/flower:latest
+    ports:
+      - "5555:5555"
+    env_file:
+      - .env.prod
+    depends_on:
+      - redis
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - 9090:9090
+    restart: unless-stopped
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - ./prometheus/prometheus_data:/prometheus
+
+  grafana:
+    build: grafana
+    container_name: grafana
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+    depends_on:
+      - prometheus
+
 volumes:
   postgres_data:
   minio_data:
   static_volume:
   media_volume:
+  prometheus_data:
